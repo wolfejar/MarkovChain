@@ -16,57 +16,47 @@ public class MarkovChain {
 		
 		try {
 			Random r = new Random();
-			List<String> lines = Files.readAllLines(Paths.get(FILENAME));
-			ArrayList<String> allWords = new ArrayList<String>();
+			String lines = readFile(FILENAME);
 			Map<String, ArrayList<String>> m = new HashMap<String, ArrayList<String>>();
-			for(String s: lines)
+			String[] splitStr = lines.trim().split("\\s+");
+			
+			try{
+			for(int i = 0; i < splitStr.length; i++)
 			{
-				String[] splitStr = s.trim().split("\\s+");
-				for(String s2: splitStr)
+				StringBuilder sb = new StringBuilder();
+				sb.append(splitStr[i] + " " + splitStr[i + 1]);
+				if(m.containsKey(sb.toString()))
 				{
-					if(!(allWords.contains(s2)))
-					{
-						allWords.add(s2);
-					}
+					ArrayList<String> update = m.get(sb.toString());
+					update.add(splitStr[i+2]);
+					m.put(sb.toString(), update);
+				}
+				else
+				{
+					ArrayList<String> newList = new ArrayList<String>();
+					newList.add(splitStr[i+2]);
+					m.put(sb.toString(), newList);
 				}
 			}
-			for(String s: allWords)
+			}catch(Exception e)
 			{
-				m.put(s, new ArrayList<String>());
+				// nothing
 			}
-			for(int i = 0; i < lines.size(); i ++)
+			
+			int k = r.nextInt(10000);
+			String phrase = splitStr[k] + " " + splitStr[k + 1];
+			System.out.print(phrase + " ");
+			for(int i = 0; i < 10; i ++) // i is the number of lines to print, can be adjusted
 			{
-				String[] splitStr = lines.get(i).trim().split("\\s+");
-				for(int j = 0; j < splitStr.length; j ++)
+				for(int j = 0; j < 10; j ++) // j is the words per line to print, can be adjusted
 				{
-					ArrayList<String> update = m.get(splitStr[j]);
-					try
-					{
-						update.add(splitStr[j + 1]);
-						m.put(splitStr[j], update);
-					}
-					catch(ArrayIndexOutOfBoundsException e)
-					{
-						try{
-						update.add(lines.get(i + 1).substring(0, lines.get(i + 1).indexOf(' ')));
-						m.put(splitStr[j], update);
-						}
-						catch(IndexOutOfBoundsException p)
-						{
-							//nothing
-						}
-					}
-				}
-			}
-			String word = allWords.get(r.nextInt(allWords.size()));
-			for(int i = 0; i < 5; i ++) // i is the number of lines to print, can be adjusted
-			{
-				for(int j = 0; j < 20; j ++) // j is the words per line to print, can be adjusted
-				{
-					ArrayList<String> newWords = m.get(word);
-					String word2 = newWords.get(r.nextInt(newWords.size()));
-					System.out.print(word + " ");
-					word = word2;
+					ArrayList<String> newWords = m.get(phrase);
+					String nextWord = newWords.get(r.nextInt(newWords.size()));
+					System.out.print(nextWord + " ");
+					String[] f = phrase.trim().split(" ");
+					f[0] = f[1];
+					f[1] = nextWord;;
+					phrase = f[0] + " " + f[1];
 				}
 				System.out.println("");
 			}
@@ -74,6 +64,23 @@ public class MarkovChain {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+	}
+	
+	private static String readFile(String file) throws IOException {
+	    BufferedReader reader = new BufferedReader(new FileReader (file));
+	    String         line = null;
+	    StringBuilder  stringBuilder = new StringBuilder();
+	    String         ls = System.getProperty("line.separator");
+
+	    try {
+	        while((line = reader.readLine()) != null) {
+	            stringBuilder.append(line);
+	            stringBuilder.append(ls);
+	        }
+
+	        return stringBuilder.toString();
+	    } finally {
+	        reader.close();
+	    }
 	}
 }
