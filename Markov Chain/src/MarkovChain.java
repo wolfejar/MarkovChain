@@ -10,10 +10,10 @@ public class MarkovChain {
 	
 	// visit http://www.textfiles.com/etext/ for free, legal books in .txt format
 	// ENTER .TXT FILE DESTINATION BELOW
-	final static String FILENAME = "";
-	
+	final static String FILENAME = "//home//jared//Downloads//twocities";
+
 	public static void main(String[] args){
-		
+		Scanner s = new Scanner(System.in);
 		try {
 			Random r = new Random();
 			String lines = readFile(FILENAME);
@@ -46,19 +46,20 @@ public class MarkovChain {
 			int k = r.nextInt(10000);
 			String phrase = splitStr[k] + " " + splitStr[k + 1];
 			System.out.print(phrase + " ");
-			for(int i = 0; i < 10; i ++) // i is the number of lines to print, can be adjusted
-			{
-				for(int j = 0; j < 10; j ++) // j is the words per line to print, can be adjusted
+			String input = "x";
+			while(input != "") {
+				for (int j = 0; j < 10; j++) // j is the words per line to print, can be adjusted
 				{
 					ArrayList<String> newWords = m.get(phrase);
 					String nextWord = newWords.get(r.nextInt(newWords.size()));
 					System.out.print(nextWord + " ");
 					String[] f = phrase.trim().split(" ");
 					f[0] = f[1];
-					f[1] = nextWord;;
+					f[1] = nextWord;
 					phrase = f[0] + " " + f[1];
 				}
 				System.out.println("");
+				input = s.nextLine();
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
